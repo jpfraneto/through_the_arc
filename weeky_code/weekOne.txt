@@ -1,0 +1,98 @@
+
+// this is a dummy implementation on javascript
+
+async function week_one () {
+	try {
+        let subscribersOfThroughTheArcFids;
+        for (let i = 1 ; i < 162 ; i++) {
+            let thisSubscribersFid;
+            thisSubscribersFid = await fetchThisTokensAssociatedFid(i);
+            subscribersOfThroughTheArcFids.push(thisSubscribersFid);
+        }
+		for (const thisSubscribersFid of subscribersOfThroughTheArcFids) {
+			const last2222castsOfThisUser = await fetchTheLast2222CastsFromThisUser(thisSubscribersFid); 
+			const fren = {
+				fid: thisSubscribersFid,
+				week: "one",
+				last2222Casts : last2222castsOfThisUser,
+			};
+			const frenInformation = await fetchThisUsersInformationFromFarcaster(thisSubscribersFid); // https://api.neynar.com/v2/farcaster/user/bulk?fids=${subscriber.fid}&viewer_fid=16098
+			fren.username = frenInformation.username;
+			fren.pfp_url = frenInformation.pfp_url;
+			fren.profile = frenInformation.profile.bio.text;
+			fren.follower_count = frenInformation.follower_count;
+			fren.following_count = frenInformation.following_count;
+			fren.eth_address = frenInformation.verified_addresses.eth_addresses[0];
+			const imageOfThisWeekForThisFren = await generateImageOfThisWeekForFren(fren);
+			const arweaveHashForThisImage = await uploadImageToArweave(imageOfThisWeekForThisFren);
+			fren.arweaveHashForThisWeek = arweaveHashForThisImage;
+			const openEditionContractAddress = await createOpenEditionForThisImage(arweaveHashForThisImage);
+			fren.openEditionContractAddress = openEditionContractAddress;
+			const howThisNftWasMade = 'here goes a cohesive explanation of how this nft was made';
+			const sentTheDmToTheUser = await sendDmToTheUserWithTheLinkToTheNft(openEditionContractAddress);
+			fren.dmSent = sentTheDmToTheUser;
+			fren.processComplete = true;
+			saveThisFrenForThisWeek(fren);
+		}
+	} catch (error) {
+
+	}
+}
+
+
+
+async function fetchThisTokensAssociatedFid (tokenId) {
+    const smartContractAddress = "0x9156d9f4459f92c3c7f7b898d22045b04a6363f6";
+    const ethereumAddress = await queryTheSmartContractAndCallTheOwnerOfReadFunctionWithThisTokenIdOnBaseMainnet(smartContractAddress, tokenId);
+    // process.env.ALCHEMY_HTTPS_RPC=https://base-mainnet.g.alchemy.com/v2/XM4FYptrP8PYpyw6GUwbVOMUrSAs75nQ
+    // process.env.ALCHEMY_API_KEY=XM4FYptrP8PYpyw6GUwbVOMUrSAs75nQ
+    const fid = await fetch('https://api.neynar.com/v2/farcaster/user/lookup', {
+        // curl --location '' \
+        // --header 'api_key: NEYNAR_API_KEY' \
+        // --header 'Content-Type: application/json' \
+        // --data '{
+        //   "address": ethereumAddress
+        // }'
+    });
+    return fid;
+}
+
+
+const arweaveHashesWithFids = [
+    {
+        fid: 16098,
+        arweaveHash: 'AAAAANsEvzGbICpfAj3NN41_ox--2cNxkEhAo0aggpDPkY7zru29g24uMWUP9hTa',
+        maxNumberOfMints: 8,
+        price: 0,
+        currency: '$degen'
+    },
+    {
+        fid: 18350,
+        arweaveHash: 'AAAAANsEvzGbICpfAj3NN41_ox--2cNxkEhAo0aggpDPkY7zru29g24uMWUP9hTa',
+        maxNumberOfMints: 8,
+        price: 0,
+        currency: '$tn100x'
+    },
+    {
+        fid: 1111111,
+        arweaveHash: 'AAAAANsEvzGbICpfAj3NN41_ox--2cNxkEhAo0aggpDPkY7zru29g24uMWUP9hTa',
+        maxNumberOfMints: 8,
+        price: 0,
+        currency: '$newen'
+    }
+]
+
+async function generateNftCollection(arweaveHashesWithFids){
+    // create for each element an erc1155 edition that has a limited supply (maxNumberOfMints)
+    // calling an api route of mint.club
+    // have the image point to that arweave hash, 
+    // and the price and currency as parameters
+}
+
+
+
+
+
+
+
+
